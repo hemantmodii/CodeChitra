@@ -7,14 +7,15 @@ import UserAvatar from "@/components/UserAvatar";
 import prisma from "@/lib/prisma";
 import { FollowerInfo, getUserDataSelect, UserData } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
-import { format } from "date-fns"; // Import format
+import { format } from "date-fns"; // Make sure to import format
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import UserPosts from "./UserPosts";
 
+// Update PageProps to accommodate the expected type structure
 interface PageProps {
-  params: { username: string };
+  params: Promise<{ username: string }>; // Change here
 }
 
 const getUser = cache(async (username: string, loggedInUserId: string) => {
@@ -36,7 +37,7 @@ const getUser = cache(async (username: string, loggedInUserId: string) => {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { username } = params; // Destructure username from params
+  const { username } = await params; // Await the promise to get the username
   const { user: loggedInUser } = await validateRequest();
 
   if (!loggedInUser) return {};
@@ -49,7 +50,7 @@ export async function generateMetadata({
 }
 
 export default async function Page({ params }: PageProps) {
-  const { username } = params; // Destructure username from params
+  const { username } = await params; // Await the promise to get the username
   const { user: loggedInUser } = await validateRequest();
 
   if (!loggedInUser) {
