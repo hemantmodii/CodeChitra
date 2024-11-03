@@ -4,6 +4,7 @@ const nextConfig = {
     staleTimes: {
       dynamic: 30,
     },
+    serverActions: true, // Enable Server Actions feature flag
   },
   serverExternalPackages: ["@node-rs/argon2"],
 };
