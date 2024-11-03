@@ -7,7 +7,7 @@ import UserAvatar from "@/components/UserAvatar";
 import prisma from "@/lib/prisma";
 import { FollowerInfo, getUserDataSelect, UserData } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
-import {  } from "date-fns";
+import { format } from "date-fns"; // Import format
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
@@ -34,8 +34,9 @@ const getUser = cache(async (username: string, loggedInUserId: string) => {
 });
 
 export async function generateMetadata({
-  params: { username },
+  params,
 }: PageProps): Promise<Metadata> {
+  const { username } = params; // Destructure username from params
   const { user: loggedInUser } = await validateRequest();
 
   if (!loggedInUser) return {};
@@ -47,7 +48,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({ params: { username } }: PageProps) {
+export default async function Page({ params }: PageProps) {
+  const { username } = params; // Destructure username from params
   const { user: loggedInUser } = await validateRequest();
 
   if (!loggedInUser) {
@@ -81,7 +83,7 @@ interface UserProfileProps {
   loggedInUserId: string;
 }
 
-async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
+function UserProfile({ user, loggedInUserId }: UserProfileProps) {
   const followerInfo: FollowerInfo = {
     followers: user._count.followers,
     isFollowedByUser: user.followers.some(
@@ -102,7 +104,9 @@ async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
             <h1 className="text-3xl font-bold">{user.displayName}</h1>
             <div className="text-muted-foreground">@{user.username}</div>
           </div>
-          <div>Member since {(user.createdAt, "MMM d, yyyy")}</div>
+          <div>
+            Member since {format(new Date(user.createdAt), "MMM d, yyyy")}
+          </div>
           <div className="flex items-center gap-3">
             <span>
               Posts:{" "}
