@@ -4,9 +4,16 @@ const nextConfig = {
     staleTimes: {
       dynamic: 30,
     },
-    serverActions: true, // Enable Server Actions feature flag
+    serverActions: true,
   },
   serverExternalPackages: ["@node-rs/argon2"],
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.node$/,
+      use: 'node-loader', // Use node-loader to handle .node files
+    });
+    return config;
+  },
 };
 
 export default nextConfig;
