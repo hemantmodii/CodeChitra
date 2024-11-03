@@ -3,10 +3,10 @@ import prisma from "@/lib/prisma";
 import { getPostDataInclude, PostsPage } from "@/lib/types";
 import { NextRequest } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { username: string } } // Ensure this matches the route
-) {
+// Adjusting the function signature
+export async function GET(req: NextRequest, context: { params: { username: string } }) {
+  const { params } = context; // Destructure params from context
+
   try {
     const cursor = req.nextUrl.searchParams.get("cursor") || undefined;
     const pageSize = 10;
@@ -17,9 +17,9 @@ export async function GET(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch the user ID based on the username from params
+    // Fetch the user by username from params
     const targetUser = await prisma.user.findUnique({
-      where: { username: params.username }, // Correctly accessing username from params
+      where: { username: params.username }, // Use username from params
     });
 
     if (!targetUser) {
@@ -27,7 +27,7 @@ export async function GET(
     }
 
     const posts = await prisma.post.findMany({
-      where: { userId: targetUser.id }, // Use the targetUser's ID
+      where: { userId: targetUser.id }, // Use the target user's ID
       include: getPostDataInclude(user.id),
       orderBy: { createdAt: "desc" },
       take: pageSize + 1,
