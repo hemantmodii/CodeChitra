@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { username: string } } // Corrected type for params
+  { params }: { params: { username: string } } // Ensure this matches the route
 ) {
   try {
     const cursor = req.nextUrl.searchParams.get("cursor") || undefined;
@@ -17,9 +17,17 @@ export async function GET(
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Use username instead of userId to fetch the posts
+    // Fetch the user ID based on the username from params
+    const targetUser = await prisma.user.findUnique({
+      where: { username: params.username }, // Correctly accessing username from params
+    });
+
+    if (!targetUser) {
+      return Response.json({ error: "User not found" }, { status: 404 });
+    }
+
     const posts = await prisma.post.findMany({
-      where: { userId: user.id }, // Assuming you're filtering posts by the logged-in user
+      where: { userId: targetUser.id }, // Use the targetUser's ID
       include: getPostDataInclude(user.id),
       orderBy: { createdAt: "desc" },
       take: pageSize + 1,
