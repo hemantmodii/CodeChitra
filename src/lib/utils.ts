@@ -1,21 +1,21 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { formatDate, formatDistanceToNowStrict } from "date-fns";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { format, formatDistanceToNowStrict } from "date-fns"; // Use `format` instead of `formatDate`
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function formatRelativeDate(from: Date) {
   const currentDate = new Date();
 
-  if (currentDate.getTime() - from.getTime() < 24*60*60*1000 ) {
-    return formatDistanceToNowStrict(from, {addSuffix: true})
+  if (currentDate.getTime() - from.getTime() < 24 * 60 * 60 * 1000) {
+    return formatDistanceToNowStrict(from, { addSuffix: true });
   } else {
     if (currentDate.getFullYear() === from.getFullYear()) {
-      return formatDate(from, "MMM d");
+      return format(from, "MMM d"); // Use `format` here
     } else {
-      return formatDate(from, "MMM d, yyy" );
+      return format(from, "MMM d, yyyy"); // Corrected the typo from `yyy` to `yyyy`
     }
   }
 }
@@ -23,7 +23,6 @@ export function formatRelativeDate(from: Date) {
 export function formatNumber(n: number): string {
   return Intl.NumberFormat("en-US", {
     notation: "compact",
-    maximumFractionDigits: 1
+    maximumFractionDigits: 1,
   }).format(n);
 }
- 
